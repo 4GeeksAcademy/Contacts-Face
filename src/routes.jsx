@@ -1,30 +1,40 @@
-// Import necessary components and functions from react-router-dom.
+// src/routes.js
+import { createBrowserRouter } from "react-router-dom";
+import { Layout } from "./pages/Layout.jsx"; // Layout está en la raíz de src
+import { Home } from "./pages/Home.jsx"; // Home está en pages
+import { Demo } from "./pages/Demo.jsx"; // Demo está en pages
+import { Editcontact } from "./components/Editcontact.jsx"; // Editcontact está en pages
+import { Single } from "./pages/Single.jsx"; // Single está en la raíz de src (si lo usas para detalles)
 
-import {
-    createBrowserRouter,
-    createRoutesFromElements,
-    Route,
-} from "react-router-dom";
-import { Layout } from "./pages/Layout";
-import { Home } from "./pages/Home";
-import { Single } from "./pages/Single";
-import { Demo } from "./pages/Demo";
-
-export const router = createBrowserRouter(
-    createRoutesFromElements(
-    // CreateRoutesFromElements function allows you to build route elements declaratively.
-    // Create your routes here, if you want to keep the Navbar and Footer in all views, add your new routes inside the containing Route.
-    // Root, on the contrary, create a sister Route, if you have doubts, try it!
-    // Note: keep in mind that errorElement will be the default page when you don't get a route, customize that page to make your project more attractive.
-    // Note: The child paths of the Layout element replace the Outlet component with the elements contained in the "element" attribute of these child paths.
-
-      // Root Route: All navigation will start from here.
-      <Route path="/" element={<Layout />} errorElement={<h1>Not found!</h1>} >
-
-        {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
-        <Route path= "/" element={<Home />} />
-        <Route path="/single/:theId" element={ <Single />} />  {/* Dynamic route for single items */}
-        <Route path="/demo" element={<Demo />} />
-      </Route>
-    )
-);
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />, // El Layout se renderiza para todas las rutas hijas
+    children: [
+      {
+        path: "/", // Ruta para la página principal (lista de contactos)
+        element: <Home />,
+      },
+      {
+        path: "/demo", // Ruta para la página de demostración (si la mantienes)
+        element: <Demo />,
+      },
+      {
+        path: "/editcontact/:id", // Ruta para editar un contacto existente (con ID)
+        element: <Editcontact />,
+      },
+      {
+        path: "/addcontact", // Ruta para añadir un nuevo contacto
+        element: <Editcontact />, // Reutiliza el componente Editcontact
+      },
+      {
+        path: "/single/:id", // Ruta para la vista de detalle de un solo contacto (si la usas)
+        element: <Single />,
+      },
+      {
+        path: "*", // Ruta comodín para manejar URL no encontradas (404)
+        element: <h1 className="text-center mt-5">404 - Page Not Found!</h1>,
+      },
+    ],
+  },
+]);
