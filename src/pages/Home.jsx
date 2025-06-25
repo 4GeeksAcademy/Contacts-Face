@@ -1,84 +1,145 @@
 // src/pages/Home.jsx
-import React, { useState } from "react"; // Importa useState para gestionar el estado local del modal
-import { Link, useNavigate } from "react-router-dom"; // Hooks para navegación
-import useGlobalReducer from "../hooks/useGlobalReducer.jsx"; // Hook personalizado para el estado global
-import { ContactCard } from "../components/ContactCard.jsx"; // Componente para mostrar cada tarjeta de contacto
-import { DeleteConfirmationModal } from "../components/DeleteConfirmationModal.jsx"; // Importa el nuevo componente modal
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
+import { ContactCard } from "../components/ContactCard.jsx";
+import { DeleteConfirmationModal } from "../components/DeleteConfirmationModal.jsx";
+// Importa las funciones de tu nuevo servicio de API
+// La ruta es a 'src/components/contactService.js' según tu estructura
+import { getContacts, createAgenda, deleteContact } from "../components/contactService.js";
+
 
 export const Home = () => {
-  const { store, dispatch } = useGlobalReducer(); // Accede al estado global (store) y a la función de dispatch
-  const navigate = useNavigate(); // Hook para la navegación programática
+    const { store, dispatch } = useGlobalReducer();
+    const navigate = useNavigate();
 
-  // Estado local para controlar la visibilidad del modal de confirmación
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  // Estado local para guardar el ID del contacto que se va a eliminar
-  const [contactToDeleteId, setContactToDeleteId] = useState(null);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [contactToDeleteId, setContactToDeleteId] = useState(null);
 
-  // Función que se ejecuta cuando se hace clic en el botón de eliminar de una ContactCard.
-  // Muestra el modal de confirmación.
-  const handleDeleteContactClick = (id) => {
-    setContactToDeleteId(id); // Guarda el ID del contacto que se desea eliminar
-    setShowDeleteModal(true); // Establece el estado para mostrar el modal
-  };
+    /**
+     * Función para obtener los contactos de la API y actualizar el store global.
+     * Maneja los estados de carga y error.
+     */
+    const fetchContacts = async () => {
+        dispatch({ type: "SET_LOADING", payload: true }); // Activa el estado de carga
+        dispatch({ type: "SET_ERROR", payload: null });   // Limpia errores anteriores
+        try {
+            // Intenta obtener los contactos
+            const data = await getContacts();
+            dispatch({ type: "SET_CONTACTS", payload: data }); // Actualiza los contactos en el store
+        } catch (error) {
+            // Si hay un error (ej. 404, agenda no encontrada), intenta crear la agenda
+            if (error.message && error.message.includes("404")) { // Se agregó verificación 'error.message'
+                console.warn("Agenda no encontrada. Intentando crearla...");
+                try {
+                    await createAgenda(); // Llama a la función para crear la agenda
+                    // Después de crear, intenta obtener los contactos de nuevo
+                    await fetchContacts(); 
+                    return; // Sale de la función para evitar procesar el error original
+                } catch (createError) {
+                    console.error("Error al crear la agenda para reintentar la obtención:", createError);
+                    dispatch({ type: "SET_ERROR", payload: `Falló al crear o cargar la agenda: ${createError.message}` });
+                    return;
+                }
+            }
+            console.error("Error al obtener contactos:", error);
+            dispatch({ type: "SET_ERROR", payload: `Falló al cargar los contactos: ${error.message}.` });
+        } finally {
+            dispatch({ type: "SET_LOADING", payload: false }); // Desactiva el estado de carga
+        }
+    };
 
-  // Función que se ejecuta cuando el usuario CANCELA la eliminación desde el modal.
-  // Oculta el modal y resetea el ID del contacto.
-  const handleCancelDelete = () => {
-    setShowDeleteModal(false); // Oculta el modal
-    setContactToDeleteId(null); // Limpia el ID del contacto a eliminar
-  };
+    // Efecto para cargar los contactos cuando el componente se monta
+    useEffect(() => {
+        fetchContacts();
+    }, []); // El array de dependencias vacío asegura que se ejecute solo una vez al montar
 
-  // Función que se ejecuta cuando el usuario CONFIRMA la eliminación desde el modal.
-  // Despacha la acción DELETE_CONTACT y luego oculta el modal.
-  const handleConfirmDelete = () => {
-    if (contactToDeleteId !== null) { // Asegura que hay un ID de contacto guardado
-      dispatch({ type: "DELETE_CONTACT", payload: { id: contactToDeleteId } }); // Despacha la acción al store
-    }
-    setShowDeleteModal(false); // Oculta el modal
-    setContactToDeleteId(null); // Limpia el ID del contacto a eliminar
-  };
+    /**
+     * Maneja el clic en el botón de eliminar contacto para abrir el modal de confirmación.
+     * @param {number} id El ID del contacto a eliminar.
+     */
+    const handleDeleteContactClick = (id) => {
+        setContactToDeleteId(id);
+        setShowDeleteModal(true);
+    };
 
-  // Función para manejar la edición de un contacto. Redirige a la página de edición.
-  const handleEditContact = (id) => {
-    navigate(`/editcontact/${id}`); // Navega a la ruta de edición con el ID del contacto
-  };
+    /**
+     * Cierra el modal de confirmación de eliminación sin realizar la acción.
+     */
+    const handleCancelDelete = () => {
+        setShowDeleteModal(false);
+        setContactToDeleteId(null);
+    };
 
-  return (
-    <div className="container mt-5">
-      {/* Botón para añadir un nuevo contacto, alineado a la derecha */}
-      <div className="d-flex justify-content-end mb-3">
-        <Link to="/addcontact">
-          <button className="btn btn-success">Add new contact</button>
-        </Link>
-      </div>
+    /**
+     * Confirma la eliminación de un contacto llamando a la API y actualizando el store.
+     */
+    const handleConfirmDelete = async () => {
+        if (contactToDeleteId !== null) {
+            dispatch({ type: "SET_LOADING", payload: true });
+            dispatch({ type: "SET_ERROR", payload: null });
+            try {
+                // Llama a la función de eliminación del servicio de API
+                await deleteContact(contactToDeleteId);
+                // Si la eliminación fue exitosa, despacha la acción para actualizar el store
+                dispatch({ type: "DELETE_CONTACT", payload: { id: contactToDeleteId } });
+                console.log(`Contacto con ID ${contactToDeleteId} eliminado exitosamente.`);
+            } catch (error) {
+                console.error("Error al eliminar contacto:", error);
+                dispatch({ type: "SET_ERROR", payload: `Falló al eliminar el contacto: ${error.message}.` });
+            } finally {
+                dispatch({ type: "SET_LOADING", payload: false });
+                setShowDeleteModal(false);
+                setContactToDeleteId(null);
+            }
+        }
+    };
 
-      {/* Lista de contactos */}
-      <ul className="list-group">
-        {/* Renderizado condicional: si hay contactos, mapea y muestra ContactCard; si no, muestra un mensaje */}
-        {store.contacts && store.contacts.length > 0 ? (
-          store.contacts.map((contact) => (
-            <ContactCard
-              key={contact.id} // Clave única para cada elemento de la lista (crucial para React)
-              contact={contact} // Pasa el objeto de contacto a ContactCard
-              onDelete={handleDeleteContactClick} // Pasa la función para iniciar la eliminación (muestra modal)
-              onEdit={handleEditContact} // Pasa la función para editar
+    /**
+     * Navega a la página de edición de contacto.
+     * @param {number} id El ID del contacto a editar.
+     */
+    const handleEditContact = (id) => {
+        navigate(`/editcontact/${id}`);
+    };
+
+    return (
+        <div className="container mt-5">
+            <div className="d-flex justify-content-end mb-3">
+                <Link to="/addcontact">
+                    <button className="btn btn-success">Add new contact</button>
+                </Link>
+            </div>
+
+            {store.loading && <p className="text-center text-info">Cargando contactos...</p>}
+            {store.error && <p className="text-center text-danger">Error: {store.error}</p>}
+
+            <ul className="list-group">
+                {store.contacts && store.contacts.length > 0 ? (
+                    store.contacts.map((contact) => (
+                        <ContactCard
+                            key={contact.id}
+                            contact={contact}
+                            onDelete={handleDeleteContactClick}
+                            onEdit={handleEditContact}
+                        />
+                    ))
+                ) : (
+                    // Muestra un mensaje si no hay contactos y no estamos cargando/hay error
+                    !store.loading && !store.error && (
+                        <li className="list-group-item text-center py-4 text-muted">
+                            No contacts yet. Click "Add new contact" to start!
+                        </li>
+                    )
+                )}
+            </ul>
+
+            <DeleteConfirmationModal
+                show={showDeleteModal}
+                onClose={handleCancelDelete}
+                onConfirm={handleConfirmDelete}
+                message="¿Estás seguro de que quieres borrar este contacto? Esta acción no se puede deshacer."
             />
-          ))
-        ) : (
-          // Mensaje cuando la lista de contactos está vacía
-          <li className="list-group-item text-center py-4 text-muted">
-            No contacts yet. Click "Add new contact" to start!
-          </li>
-        )}
-      </ul>
-
-      {/* Renderiza el modal de confirmación. Solo se muestra si 'showDeleteModal' es true */}
-      <DeleteConfirmationModal
-        show={showDeleteModal} // Pasa el estado de visibilidad
-        onClose={handleCancelDelete} // Función para cerrar el modal al cancelar
-        onConfirm={handleConfirmDelete} // Función para confirmar la eliminación
-        message="Si borras esto no lo podras recuperar" // Mensaje personalizado del modal
-      />
-    </div>
-  );
+        </div>
+    );
 };

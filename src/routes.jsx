@@ -3,6 +3,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { Layout } from "./pages/Layout.jsx"; // Layout está en la raíz de src
 import { Home } from "./pages/Home.jsx"; // Home está en pages
 import { Demo } from "./pages/Demo.jsx"; // Demo está en pages
+// --- ¡CORRECCIÓN AQUÍ! La ruta de importación de Editcontact.jsx ---
 import { Editcontact } from "./components/Editcontact.jsx"; // Editcontact está en pages
 import { Single } from "./pages/Single.jsx"; // Single está en la raíz de src (si lo usas para detalles)
 

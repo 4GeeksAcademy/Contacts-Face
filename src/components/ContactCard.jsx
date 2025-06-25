@@ -9,7 +9,7 @@ export const ContactCard = ({ contact, onDelete, onEdit }) => {
       <div className="row w-100 align-items-center"> {/* align-items-center para centrado vertical */}
         <div className="col-12 col-sm-6 col-md-3 px-0 text-center">
           <img
-            src={contact.imgUrl || "https://via.placeholder.com/150"} // Fallback image si no hay imgUrl
+            src={contact.imgUrl || "https://i.pinimg.com/736x/9b/85/18/9b8518a8d7d94904c294f7692daa5965.jpg"} // Fallback image si no hay imgUrl
             alt={`${contact.fullName}'s avatar`}
             className="rounded-circle mx-auto d-block img-fluid"
             style={{ width: "150px", height: "150px", objectFit: "cover" }}
@@ -26,7 +26,7 @@ export const ContactCard = ({ contact, onDelete, onEdit }) => {
           </div>
           {/* Envolvemos el nombre y la información de contacto en un Link a la página Single */}
           <Link to={`/single/${contact.id}`} className="text-decoration-none text-reset d-block">
-            <label className="name lead">{contact.fullName}</label>
+            <label className="name lead">{contact.full_name}</label>
             <br />
             <i className="fas fa-map-marker-alt text-muted me-3"></i> {/* Ícono de ubicación con margen */}
             <span className="text-muted">{contact.address}</span>
