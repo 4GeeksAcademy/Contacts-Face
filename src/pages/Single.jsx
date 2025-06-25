@@ -1,5 +1,3 @@
-// src/pages/Single.jsx
-import React from "react"; // Solo necesitamos React para el componente
 import { Link, useParams } from "react-router-dom"; // Link para navegación, useParams para obtener el ID de la URL
 import useGlobalReducer from "../hooks/useGlobalReducer"; // Custom hook para acceder al estado global
 

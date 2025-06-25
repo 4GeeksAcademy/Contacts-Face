@@ -1,11 +1,8 @@
-// src/pages/Home.jsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useGlobalReducer from "../hooks/useGlobalReducer.jsx";
 import { ContactCard } from "../components/ContactCard.jsx";
 import { DeleteConfirmationModal } from "../components/DeleteConfirmationModal.jsx";
-// Importa las funciones de tu nuevo servicio de API
-// La ruta es a 'src/components/contactService.js' según tu estructura
 import { getContacts, createAgenda, deleteContact } from "../components/contactService.js";
 
 
@@ -107,7 +104,7 @@ export const Home = () => {
         <div className="container mt-5">
             <div className="d-flex justify-content-end mb-3">
                 <Link to="/addcontact">
-                    <button className="btn btn-success">Add new contact</button>
+                    <button className="btn btn-success">Add New Contact</button>
                 </Link>
             </div>
 
@@ -128,7 +125,7 @@ export const Home = () => {
                     // Muestra un mensaje si no hay contactos y no estamos cargando/hay error
                     !store.loading && !store.error && (
                         <li className="list-group-item text-center py-4 text-muted">
-                            No contacts yet. Click "Add new contact" to start!
+                          No hay contactos aun! "Add New Contact" para agregar alguno.
                         </li>
                     )
                 )}

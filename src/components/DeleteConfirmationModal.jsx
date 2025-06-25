@@ -1,15 +1,13 @@
-// src/components/DeleteConfirmationModal.jsx
-import React from 'react';
 import PropTypes from 'prop-types';
 
 export const DeleteConfirmationModal = ({ show, onClose, onConfirm, message }) => {
-    // Si 'show' es falso, el modal no se renderiza
+   
     if (!show) {
         return null;
     }
 
     return (
-        // Contenedor del modal (con un fondo oscuro semi-transparente)
+       
         <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
             <div className="modal-dialog modal-dialog-centered"
             style={{ marginTop: '-80px' }}

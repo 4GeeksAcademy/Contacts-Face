@@ -1,11 +1,6 @@
-// src/pages/Editcontact.jsx
 import { Link, useParams, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import useGlobalReducer from "../hooks/useGlobalReducer";
-// Importa las funciones de tu nuevo servicio de API
-// ¡CORRECCIÓN AQUÍ! La ruta de importación de contactService.js
-// Se ha ajustado la ruta porque el contactService.js se encuentra en 'src/components/'
-// La flecha '=>' ha sido reemplazada por 'from'
 import { addContact, updateContact } from "../components/contactService.js";
 
 export const Editcontact = () => {

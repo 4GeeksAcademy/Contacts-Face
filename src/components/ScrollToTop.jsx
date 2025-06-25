@@ -1,4 +1,3 @@
-// src/components/ScrollToTop.jsx
 import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 

@@ -1,20 +1,10 @@
-// src/store.js
-
-/**
- * Define el estado inicial de tu aplicación.
- * @returns {object} El estado inicial.
- */
 export const initialStore = () => {
     return {
         message: null, // Puedes usar esto para mensajes de confirmación o error
         contacts: [],  // Ahora los contactos se cargarán de forma simulada/local
         loading: false, // Estado para indicar si estamos cargando (simulado)
         error: null,    // Estado para almacenar cualquier error (simulado)
-        // Si tenías 'todos' para la página Demo, puedes mantenerlos o quitarlos
-        // todos: [
-        //   { id: 1, title: "Make the bed", background: null },
-        //   { id: 2, title: "Do my homework", background: null }
-        // ]
+        
     };
 };
 

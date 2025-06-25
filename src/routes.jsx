@@ -1,11 +1,9 @@
-// src/routes.js
 import { createBrowserRouter } from "react-router-dom";
-import { Layout } from "./pages/Layout.jsx"; // Layout está en la raíz de src
-import { Home } from "./pages/Home.jsx"; // Home está en pages
-import { Demo } from "./pages/Demo.jsx"; // Demo está en pages
-// --- ¡CORRECCIÓN AQUÍ! La ruta de importación de Editcontact.jsx ---
-import { Editcontact } from "./components/Editcontact.jsx"; // Editcontact está en pages
-import { Single } from "./pages/Single.jsx"; // Single está en la raíz de src (si lo usas para detalles)
+import { Layout } from "./pages/Layout.jsx";
+import { Home } from "./pages/Home.jsx"; 
+import { Demo } from "./pages/Demo.jsx"; 
+import { Editcontact } from "./components/Editcontact.jsx"; 
+import { Single } from "./pages/Single.jsx"; 
 
 export const router = createBrowserRouter([
   {
@@ -34,7 +32,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "*", // Ruta comodín para manejar URL no encontradas (404)
-        element: <h1 className="text-center mt-5">404 - Page Not Found!</h1>,
+        element: <h1 className="text-center mt-5">404  Pagina no conseguida intenta otra ruta por favor</h1>,
       },
     ],
   },

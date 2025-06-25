@@ -2,14 +2,6 @@ const AGENDA_SLUG = "Thaner1106";
 
 const API_BASE_URL = `https://playground.4geeks.com/contact/agendas/${AGENDA_SLUG}`;
 
-/**
- * Función auxiliar interna para realizar llamadas fetch a la API.
- * Centraliza el manejo de errores y las cabeceras.
- * @param {string} endpoint El path específico de la API (ej: "/contacts" o "/contacts/ID").
- * @param {object} options Las opciones para la llamada fetch (método, body, headers, etc.).
- * @returns {Promise<object>} Una promesa que resuelve con los datos JSON de la respuesta.
- * @throws {Error} Si la respuesta de la red no es exitosa o si hay un error en la API.
- */
 const _fetchApi = async (endpoint, options = {}) => {
     try {
         console.log(`Enviando solicitud a: ${API_BASE_URL}${endpoint} con opciones:`, options); // Log del request
@@ -52,12 +44,12 @@ const _fetchApi = async (endpoint, options = {}) => {
  */
 export const createAgenda = async () => {
     try {
-        // La API de 4Geeks permite crear la agenda haciendo un POST a la URL base de la agenda
+       
         const result = await _fetchApi("", { method: "POST" });
         console.log(`Agenda '${AGENDA_SLUG}' creada o ya existente:`, result);
         return result;
     } catch (error) {
-        // Si el error es que la agenda ya existe, no es un problema
+        
         if (error.message.includes("agenda already exists")) {
             console.warn(`Agenda '${AGENDA_SLUG}' ya existe. Continuando.`);
             return { message: "Agenda ya existe." };
@@ -95,7 +87,7 @@ export const getContacts = async () => {
  * @returns {Promise<object>} Una promesa que resuelve con el objeto del contacto recién creado.
  */
 export const addContact = async (contactData) => {
-    // ¡CORRECCIÓN CLAVE AQUÍ! Cambiado de contactData.full_name a contactData.name
+    
     // La API de 4Geeks espera 'name' para el nombre del contacto.
     const payload = { 
         name: contactData.full_name, // Mapeamos full_name del formulario a 'name' para la API
