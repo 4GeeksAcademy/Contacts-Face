@@ -1,8 +1,5 @@
-// src/services/contactService.js
-
-// Define el slug de la agenda que se utilizará para todas las operaciones de la API.
 const AGENDA_SLUG = "Thaner1106"; 
-// URL base para interactuar con la API de contactos.
+
 const API_BASE_URL = `https://playground.4geeks.com/contact/agendas/${AGENDA_SLUG}`;
 
 /**
